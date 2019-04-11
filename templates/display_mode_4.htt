@@ -1,0 +1,41 @@
+<script type="text/javascript">
+	// check if jQuery is included via template index.php or equivalent method
+	showJqueryStatus("Anynews (jQuery Flexslider)");
+
+	// include flexslider files
+	$.include([
+		// load thirdparty jQuery plugin components of flexslider
+		'{{ WB_URL }}/modules/news_img_anwhere/thirdparty/flexslider/flexslider.css',
+		'{{ WB_URL }}/modules/news_img_anwhere/thirdparty/flexslider/jquery.flexslider-min.js',
+		
+		// include YOUR flexslider CSS and settings (adjust these two files to your needs)
+		'{{ WB_URL }}/modules/news_img_anwhere/css/flexslider-custom.css',
+		'{{ WB_URL }}/modules/news_img_anwhere/javascript/flexslider-config.js'
+	]); 
+</script>	
+
+<div class="mod_nia">
+	<h2>{{ lang.TXT_HEADER }}</h2>
+	
+	{% if newsItems %}
+		<div class="flexslider">
+			<ul class="slides">
+				{% for news in newsItems %}
+					{% if news.TS_POSTED_WHEN > 0 %}
+						<li>
+							<h2>{{ news.TITLE }}</h2>
+							{{ news.CONTENT_SHORT }}
+							{% if news.CONTENT_LONG %}
+								<a href="{{ news.LINK }}">{{ lang.TXT_READMORE }}</a>
+							{% endif %}
+						</li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</div>
+	
+	{% else %}
+		{{ lang.TXT_NO_NEWS }}
+	{% endif %}
+
+</div>

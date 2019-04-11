@@ -1,0 +1,39 @@
+<div class="mod_nia">
+	<h2>NIA Cheat Sheet</h2>
+	<p>The following placeholders can be used in your NIA template files (/templates/display_mode_X.htt). Remember to wrap {{ '{{' }} placeholders {{ '}}' }} in <b>curly brackets</b>.
+	<br /> You can just use the placeholders you want to show in your template file.</p>
+
+	<h3>Global placeholders</h3>
+	<tt>
+		{{ '{{ WB_URL }}' }}: 
+	</tt>
+	{{ WB_URL }}
+
+	<h3>Placeholders from NIA language file</h3>
+	{% for key, value in lang %}
+		<tt>
+			{{ '{{' }} 
+			{{ key }} 
+			{{ '}}' }}: 
+		</tt>
+		{{ value }}</br>
+	{% endfor %}
+
+	<h3>Placeholders from news entries</h3>
+		{% for news in newsItems %}
+			<h2>News counter: {{ news.NEWS_ID }} / {{ newsItems | length }}</h2>
+			
+			{% for key, value in news %}
+				<tt>
+					{{ '{{' }}
+					{{ key }}
+					{{ '}}' }}:
+				</tt>
+				{{ value }} <br />
+			{% endfor %}
+	
+	{% else %}
+		{{ lang.TXT_NO_NEWS }}
+	{% endfor %}
+	
+</div>

@@ -1,0 +1,17 @@
+<div class="mod_nia">
+	<h2>{{ lang.TXT_HEADER }}</h2>
+
+	{% if newsItems %}
+	<ul>
+		{% for news in newsItems %}
+			{% if news.TS_POSTED_WHEN > 0 %}
+				<li><a href="{{ news.LINK }}">{{ news.TITLE }} ({{ news.TS_POSTED_WHEN | date(lang.DATE_FORMAT) }})</a></li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+	
+	{% else %}
+		{{ lang.TXT_NO_NEWS }}
+	{% endif %}
+
+</div>

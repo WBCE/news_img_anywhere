@@ -1,0 +1,27 @@
+<div class="mod_nia">
+	<h2>{{ lang.TXT_HEADER }}</h2>
+	
+	{% for news in newsItems %}
+		{% if news.TS_POSTED_WHEN > 0 %}
+			<p>
+				<strong>{{ news.TITLE }} ({{ news.TS_POSTED_WHEN | date(lang.DATE_FORMAT) }})</strong>
+			</p>
+			<img src="{{ news.IMAGE }}" />
+			{{ lang.TXT_NUMBER_OF_COMMENTS }}: 
+			{{ news.COMMENTS }}
+			<br />
+	
+			{{ news.GROUP_IMAGE }} 
+			{{ news.CONTENT_SHORT}}
+			
+			{% if news.CONTENT_LONG %}
+				<a href="{{ news.LINK }}">{{ lang.TXT_READMORE }}</a>
+			{% endif %}
+			<hr />
+		{% endif %}
+	
+	{% else %}
+		{{ lang.TXT_NO_NEWS }}
+	{% endfor %}
+
+</div>

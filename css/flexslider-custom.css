@@ -1,0 +1,13 @@
+/**
+ * Custom CSS to style the flexslider display_output:=5 
+*/
+div.mod_nia .flexslider {
+	width: 520px;
+	min-height: 100px;
+	background-color: #eee;
+	border: 1px solid #999;
+}
+
+div.mod_nia ul.slides {
+	padding: 0.5em 3.5em;
+}

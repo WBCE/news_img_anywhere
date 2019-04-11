@@ -1,0 +1,17 @@
+/**
+ * Custom CSS to overwrite Liquid Slider defaults if needed
+*/
+.liquid-slider {
+	background-color: #f2f2f2;
+}
+
+/**
+ * Custom CSS styles to style the output to your needs
+*/
+#nia-liquid-slider h2 {
+	color: inherent;
+}
+
+#nia-liquid-slider p {
+	line-height: 1.5em;
+}
