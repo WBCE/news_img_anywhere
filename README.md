@@ -136,7 +136,7 @@ Calling `getImageNewsItems` without configuration array uses the DEFAULTS below:
 	Stores all image URLs, all text inside &lt;author&gt;&lt;/author&gt; tags and all matches of "test" in placeholders:  {PREFIX\_MY\_IMG\_#}, {PREFIX\_MY\_TAG\_#}, {PREFIX\_MY\_REGEX\_#}, where ***PREFIX*** is either "SHORT" or "LONG", depending if the match was found in the short/long news text and ***#*** is a number between 1 and the number of matches found
 	
 - **sort_by**: defines the sort criteria for the news items returned  
-	[1:position, 2:posted_when, 3:published_when, 4:random order, 5:number of comments]
+	[1:position, 2:posted_when, 3:published_when, 4:random order]
 	
 - **sort_order**: defines the sort order of the returned news items  
 	[1:descending, 2:=ascending]

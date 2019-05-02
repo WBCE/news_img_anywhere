@@ -26,7 +26,7 @@ if (! function_exists('getImageNewsItems')) {
 			'strip_tags' => true,             // true:=remove tags from short and long text (default:=true); false:=don´t strip tags
 			'allowed_tags' => '<p><a><img>',  // tags not striped off (default:='<p><a><img>')
 			'custom_placeholder' => false,    // false:= none (default), array('MY_VAR_1' => '%TAG%#', ... 'MY_VAR_N' => '#regex_N#' ...)
-			'sort_by' => 1,                   // 1:=position (default), 2:=posted_when, 3:=published_when, 4:=random order, 5:=number of comments
+			'sort_by' => 1,                   // 1:=position (default), 2:=posted_when, 3:=published_when, 4:=random order
 			'sort_order' => 1,                // 1:=descending (default), 2:=ascending
 			'not_older_than' => 0,            // 0:=disabled (default), 0-999 (only show news `published_when` date <=x days; 12 hours:=0.5)
 			'lang_id' => 'AUTO',              // language file to load and lang_id used if $lang_filer = true (default:= auto, examples: AUTO, DE, EN)
@@ -120,10 +120,10 @@ if (! function_exists('getImageNewsItems')) {
 		// check for multiple groups or single group values
 		if (is_array($group_id)) {
 			// SQL query for multiple groups
-			$sql_group_id = "t1.`$group_id_type` IN (" . implode(',', $group_id) . ")";
+			$sql_group_id = "`$group_id_type` IN (" . implode(',', $group_id) . ")";
 		} else {
 			// SQL query for single or empty groups
-			$sql_group_id = ($group_id) ? "t1.`$group_id_type` = '$group_id'" : '1';
+			$sql_group_id = ($group_id) ? "`$group_id_type` = '$group_id'" : '1';
 		}
 
 		/**
@@ -135,7 +135,7 @@ if (! function_exists('getImageNewsItems')) {
 		
 		$sql_not_older_than = '1';
 		if ($not_older_than > 0) {
-			$sql_not_older_than = ' (t1.`published_when` >= \'' . ($server_time - ($not_older_than * 24 * 60 * 60)) . '\')';
+			$sql_not_older_than = ' (`published_when` >= \'' . ($server_time - ($not_older_than * 24 * 60 * 60)) . '\')';
 		}
 
 		/**
@@ -148,7 +148,7 @@ if (! function_exists('getImageNewsItems')) {
 			// get all page_ids which page language match defined $lang_id  
 			$page_ids = getPageIdsByLanguage($lang_id);
 			if (count($page_ids) > 0) {
-				$sql_lang_filter = 't1.`page_id` in (' . implode(',', $page_ids) . ')'; 
+				$sql_lang_filter = '`page_id` in (' . implode(',', $page_ids) . ')'; 
 			}
 		}
 
@@ -156,7 +156,7 @@ if (! function_exists('getImageNewsItems')) {
 		 * Work out SQL sort by and sort order query string
 		 */
 		// creates SQL query for sort by option
-		$order_by_options = array('t1.`position`', 't1.`posted_when`', 't1.`published_when`', 'RAND()', '`comments`');
+		$order_by_options = array('`position`', '`posted_when`', '`published_when`', 'RAND()');
 		$sql_order_by = $order_by_options[$sort_by - 1];
 		
 		// creates SQL query for sort order option
@@ -165,21 +165,11 @@ if (! function_exists('getImageNewsItems')) {
 		/**
 		 * Build SQL query for Anynews
 		 */
-		$news_table = TABLE_PREFIX . 'mod_news_img_posts';
-		$comments_table = TABLE_PREFIX . 'mod_news_img_comments';
-		$sql = "SELECT t1.*, COUNT(`comment_id`) as `comments`
-			FROM `$news_table` as t1
-			LEFT JOIN `$comments_table` as t2
-			ON t1.`post_id` = t2.`post_id`
-			WHERE t1.`active` = '1'
-			AND $sql_group_id
-			AND $sql_lang_filter
-			AND (t1.`published_when` = '0' or t1.`published_when` <= '$server_time')
-			AND (t1.`published_until` = '0' OR t1.`published_until` >= '$server_time')
-			AND $sql_not_older_than
-			GROUP BY t1.`post_id`
-			ORDER BY $sql_order_by $sql_sort_order
-		";
+		$news_table = TABLE_PREFIX . 'mod_news_img_posts';		
+		$sql = "SELECT * FROM `$news_table` WHERE `active` = '1' AND $sql_group_id	AND $sql_lang_filter AND (`published_when` = '0' or `published_when` <= '$server_time') AND (`published_until` = '0' OR `published_until` >= '$server_time') AND $sql_not_older_than GROUP BY `post_id`	ORDER BY $sql_order_by $sql_sort_order";
+		
+		//echo $sql;
+		//exit;
 
 		// start from N-th last news item if $start_news_items is negative
 		if ($start_news_item < 0) {
@@ -238,8 +228,8 @@ if (! function_exists('getImageNewsItems')) {
 				}
 				
 				$nimage = $row['image'];
-				if (file_exists(WB_PATH . PAGES_DIRECTORY . '/beitragsbilder/' . $nimage)) {
-					$nimage =  WB_URL . PAGES_DIRECTORY . '/beitragsbilder/' . $nimage;
+				if ($row['image']!='' && file_exists(WB_PATH . MEDIA_DIRECTORY . '/.news_img/'.$row['post_id'].'/' . $nimage)) {
+					$nimage =  WB_URL . MEDIA_DIRECTORY . '/.news_img/'.$row['post_id'].'/' . $nimage;
 				}
 
 				// make news item data available in Twig template: {{ newsItems.Counter.KEY }}
@@ -254,8 +244,7 @@ if (! function_exists('getImageNewsItems')) {
 					'POSTED_BY'          => (int)$row['posted_by'],
 					'USERNAME'           => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['USERNAME']) : '',
 					'DISPLAY_NAME'       => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['DISPLAY_NAME']) : '',
-					'TITLE'              => ($strip_tags) ? strip_tags($row['title']) : $row['title'],
-					'COMMENTS'           => isset($row['comments']) ? $row['comments'] : 0,
+					'TITLE'              => ($strip_tags) ? strip_tags($row['title']) : $row['title'],					
 					'LINK'               => WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION,
 					'CONTENT_SHORT'      => $row['content_short'],
 					'CONTENT_LONG'       => $row['content_long'],					
@@ -304,7 +293,7 @@ if (! function_exists('displayNewsItems')) {
 		$strip_tags = true,             // true:=remove tags from short and long text (default:=true); false:=don´t strip tags
 		$allowed_tags = '<p><a><img>',  // tags not striped off (default:='<p><a><img>')
 		$custom_placeholder = false,    // false:= none (default), array('MY_VAR_1' => '%TAG%#', ... 'MY_VAR_N' => '#regex_N#' ...)
-		$sort_by = 1,                   // 1:=position (default), 2:=posted_when, 3:=published_when, 4:=random order, 5:=number of comments
+		$sort_by = 1,                   // 1:=position (default), 2:=posted_when, 3:=published_when, 4:=random order
 		$sort_order = 1,                // 1:=descending (default), 2:=ascending
 		$not_older_than = 0,            // 0:=disabled (default), 0-999 (only show news `published_when` date <=x days; 12 hours:=0.5)
 		$group_id_type = 'group_id',    // type used by group_id to extract news entries (supported: 'group_id', 'page_id', 'section_id', 'post_id')

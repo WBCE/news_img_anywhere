@@ -6,9 +6,7 @@
 			<p>
 				<strong>{{ news.TITLE }} ({{ news.TS_POSTED_WHEN | date(lang.DATE_FORMAT) }})</strong>
 			</p>
-			<img src="{{ news.IMAGE }}" />
-			{{ lang.TXT_NUMBER_OF_COMMENTS }}: 
-			{{ news.COMMENTS }}
+			<img src="{{ news.IMAGE }}" />			
 			<br />
 	
 			{{ news.GROUP_IMAGE }} 
