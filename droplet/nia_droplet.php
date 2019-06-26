@@ -22,7 +22,7 @@ if (! function_exists('getImageNewsItems')) return;
 // supported cwsoft-anynews options
 $options = array(
 	'group_id_type' => 'group_id',    // type used by group_id to extract news entries (supported: 'group_id', 'page_id', 'section_id', 'post_id')
-	'group_id' => 0,                  // IDs of news to show, matching defined $group_id_type (default:=0, all news, 0..N, or array(2,4,5,N) to limit news to IDs matching $group_id_type)
+	'group_id' => 0,                  // IDs of news to show, matching defined $group_id_type (default:=0, all news, 0..N, or array(2,4,5,N) to limit news to IDs matching $group_id_type, -1..-N or array(-2,-4,-5,-N) to limit news to IDs NOT matching those $group_id_type values)
 	'display_mode' => 1,              // 1:=details (default); 2:=list; 3:=coda-slider; 4:flexslider; 4-98 (custom template: display_mode_X.htt); 99:=cheat sheet
 	'start_news_item' => 0,           // start showing news from the Nth news item onwards (default:= 0, min:=-999, max:= 999); Note: -1: last item, -2: 2nd last etc.
 	'max_news_items' => 10,           // maximum number of news shown (default:= 10, min:=1, max:= 999)
