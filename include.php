@@ -18,7 +18,7 @@ if (! function_exists('getImageNewsItems')) {
 		// default settings
 		$defaults = array(
 			'group_id_type' => 'group_id',    // type used by group_id to extract news entries (supported: 'group_id', 'page_id', 'section_id', 'post_id')
-			'group_id' => 0,                  // IDs of news to show, matching defined $group_id_type (default:=0, all news, 0..N, or array(2,4,5,N) to limit news to IDs matching $group_id_type)
+			'group_id' => 0,                  // IDs of news to show, matching defined $group_id_type (default:=0, all news, 0..N, or array(2,4,5,N) to limit news to IDs matching $group_id_type, -1..-N or array(-2,-4,-5,-N) to limit news to IDs NOT matching those $group_id_type values)
 			'display_mode' => 1,              // 1:=details (default); 2:=list; 3:=coda-slider; 4:flexslider; 4-98 (custom template: display_mode_X.htt); 99:=cheat sheet
 			'start_news_item' => 0,           // start showing news from the Nth news item onwards (default:= 0, min:=-999, max:= 999); Note: -1: last item, -2: 2nd last etc.
 			'max_news_items' => 10,           // maximum number of news shown (default:= 10, min:=1, max:= 999)
@@ -55,7 +55,7 @@ if (! function_exists('getImageNewsItems')) {
 		/**
 		 * Sanitize user specified function parameters
 		 */
-		sanitizeUserInputs($group_id, 'i{0;0;999}');
+		sanitizeUserInputs($group_id, 'i{0;-999;999}');
 		sanitizeUserInputs($start_news_item, 'i{0;-999;999}');
 		sanitizeUserInputs($max_news_items, 'i{10;1;999}');
 		sanitizeUserInputs($max_news_length, 'i{-1;0;250}');
@@ -120,10 +120,17 @@ if (! function_exists('getImageNewsItems')) {
 		// check for multiple groups or single group values
 		if (is_array($group_id)) {
 			// SQL query for multiple groups
-			$sql_group_id = "`$group_id_type` IN (" . implode(',', $group_id) . ")";
+			$negate = "";
+			foreach ($group_id as $key => $value){
+				if($value<0) $negate = "NOT";
+				$group_id[$key] = abs($value);
+			}
+			$sql_group_id = "`$group_id_type` $negate IN (" . implode(',', $group_id) . ")";
 		} else {
 			// SQL query for single or empty groups
-			$sql_group_id = ($group_id) ? "`$group_id_type` = '$group_id'" : '1';
+			$sql_group_id = '1';
+			if($group_id>0) $sql_group_id = "`$group_id_type` = '$group_id'";
+			if($group_id<0) $sql_group_id = "`$group_id_type` != '".-$group_id."'";
 		}
 
 		/**

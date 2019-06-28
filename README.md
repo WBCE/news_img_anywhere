@@ -109,7 +109,7 @@ Calling `getImageNewsItems` without configuration array uses the DEFAULTS below:
 	[supported: 'group_id', 'page_id', 'section_id', 'post_id')]
 
 - **group_id**: only show news which IDs match given *group_id_type* (default 'group_id')
-	[0:all news, 1..N, or array(2,4,5,N) to limit news to single Id or multiple Ids, matching *group_id_type*]
+	[0:all news, 1..N, or array(2,4,5,N) to limit news to single Id or multiple Ids, matching *group_id_type*, -1..-N, or array(-2,-4,-5,-N) to limit news to IDs NOT matching those *group_id_type* values]
 
 - **display_mode**: ID of the NIA template to use (/templates/display_mode_X.htt)
 	[1:details, 2:list, 3:better-coda-slider, 4:flexslider, 5..98 custom template *display_mode_X.htt*]
