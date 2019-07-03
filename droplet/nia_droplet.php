@@ -4,8 +4,8 @@
  * USAGE:
  *   1. create a new droplet "getImageNewsItems" via Admin-Tools --> Droplets
  *   2. enter the following code into the droplet code section:
- *      if (! file_exists(WB_PATH . '/modules/news_img/anwhere/droplet/cwsoft-anynews-droplet.php')) return;
- *      include(WB_PATH . '/modules/news_img/anwhere/droplet/cwsoft-anynews-droplet.php');
+ *      if (! file_exists(WB_PATH . '/modules/news_img_anywhere/droplet/nia_droplet.php')) return;
+ *      include(WB_PATH . '/modules/news_img_anywhere/droplet/nia_droplet.php');
  *      return $output;
  */
 
@@ -27,7 +27,7 @@ $options = array(
 	'start_news_item' => 0,           // start showing news from the Nth news item onwards (default:= 0, min:=-999, max:= 999); Note: -1: last item, -2: 2nd last etc.
 	'max_news_items' => 10,           // maximum number of news shown (default:= 10, min:=1, max:= 999)
 	'max_news_length' => -1,          // maximum length of the short news text shown (default:=-1 => full news length)
-	'strip_tags' => true,             // true:=remove tags from short and long text (default:=true); false:=don´t strip tags
+	'strip_tags' => true,             // true:=remove tags from short and long text (default:=true); false:=donÂ´t strip tags
 	'allowed_tags' => '<p><a><img>',  // tags not striped off (default:='<p><a><img>')
 	'custom_placeholder' => false,    // false:= none (default), array('MY_VAR_1' => '%TAG%#', ... 'MY_VAR_N' => '#regex_N#' ...)
 	'sort_by' => 1,                   // 1:=position (default), 2:=posted_when, 3:=published_when, 4:=random order, 5:=number of comments
