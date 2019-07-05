@@ -4,8 +4,8 @@
  * USAGE:
  *   1. create a new droplet "getImageNewsItems" via Admin-Tools --> Droplets
  *   2. enter the following code into the droplet code section:
- *      if (! file_exists(WB_PATH . '/modules/news_img/anwhere/droplet/cwsoft-anynews-droplet.php')) return;
- *      include(WB_PATH . '/modules/news_img/anwhere/droplet/cwsoft-anynews-droplet.php');
+ *      if (! file_exists(WB_PATH . '/modules/news_img/anywhere/droplet/cwsoft-anynews-droplet.php')) return;
+ *      include(WB_PATH . '/modules/news_img/anywhere/droplet/cwsoft-anynews-droplet.php');
  *      return $output;
  */
 

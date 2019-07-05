@@ -5,12 +5,12 @@
 	// include flexslider files
 	$.include([
 		// load thirdparty jQuery plugin components of flexslider
-		'{{ WB_URL }}/modules/news_img_anwhere/thirdparty/flexslider/flexslider.css',
-		'{{ WB_URL }}/modules/news_img_anwhere/thirdparty/flexslider/jquery.flexslider-min.js',
+		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/flexslider/flexslider.css',
+		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/flexslider/jquery.flexslider-min.js',
 		
 		// include YOUR flexslider CSS and settings (adjust these two files to your needs)
-		'{{ WB_URL }}/modules/news_img_anwhere/css/flexslider-custom.css',
-		'{{ WB_URL }}/modules/news_img_anwhere/javascript/flexslider-config.js'
+		'{{ WB_URL }}/modules/news_img_anywhere/css/flexslider-custom.css',
+		'{{ WB_URL }}/modules/news_img_anywhere/javascript/flexslider-config.js'
 	]); 
 </script>	
 

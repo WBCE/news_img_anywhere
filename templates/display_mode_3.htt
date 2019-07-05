@@ -5,14 +5,14 @@
 	// include Liquid Slider plugin files
 	$.include([
 		// load thirdparty jQuery plugin components of Liquid Slider
-		'{{ WB_URL }}/modules/news_img_anwhere/thirdparty/liquidslider/css/liquid-slider.css',
-		'{{ WB_URL }}/modules/news_img_anwhere/thirdparty/liquidslider/js/jquery.easing.min.js',
-		'{{ WB_URL }}/modules/news_img_anwhere/thirdparty/liquidslider/js/jquery.touchSwipe.min.js',
-		'{{ WB_URL }}/modules/news_img_anwhere/thirdparty/liquidslider/js/jquery.liquid-slider.min.js',
+		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/css/liquid-slider.css',
+		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.easing.min.js',
+		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.touchSwipe.min.js',
+		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.liquid-slider.min.js',
 	
 		// include YOUR Liquid Slider configuration and CSS changes (adjust these two files to your needs)
-		'{{ WB_URL }}/modules/news_img_anwhere/css/liquid-slider-custom.css',
-		'{{ WB_URL }}/modules/news_img_anwhere/javascript/liquid-slider-config.js'
+		'{{ WB_URL }}/modules/news_img_anywhere/css/liquid-slider-custom.css',
+		'{{ WB_URL }}/modules/news_img_anywhere/javascript/liquid-slider-config.js'
 	]); 
 </script>	
 
