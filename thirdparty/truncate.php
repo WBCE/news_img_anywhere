@@ -36,7 +36,8 @@
  * @return string Trimmed string.
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/text.html#TextHelper::truncate
  */
-function truncate($text, $length = 100, $options = array()) {
+function nia_truncate($text, $length = 100, $options = array()) {
+
 	$default = array(
 		'ellipsis' => '...', 'exact' => false, 'html' => true
 	);

@@ -10,7 +10,10 @@ if (defined('WB_PATH') == false) {
  * Extracts requested news from the news with images module
  * and returns a string with the parsed nia template.
  */
-if (! function_exists('getImageNewsItems')) {
+if (! function_exists('getImageNewsItems'))
+{
+    require_once WB_PATH.'/modules/news_img/functions.inc.php';
+
 	function getImageNewsItems($options=array())
 	{
 		global $wb, $database, $LANG;
@@ -18,7 +21,7 @@ if (! function_exists('getImageNewsItems')) {
 		// default settings
 		$defaults = array(
 			'group_id_type' => 'group_id',    // type used by group_id to extract news entries (supported: 'group_id', 'page_id', 'section_id', 'post_id')
-			'group_id' => 0,                  // IDs of news to show, matching defined $group_id_type (default:=0, all news, 0..N, or array(2,4,5,N) to limit news to IDs matching $group_id_type, -1..-N or array(-2,-4,-5,-N) to limit news to IDs NOT matching those $group_id_type values)
+			'group_id' => 0,                  // IDs of news to show, matching defined $group_id_type (default:=0, all news, 0..N, or array(2,4,5,N) to limit news to IDs matching $group_id_type)
 			'display_mode' => 1,              // 1:=details (default); 2:=list; 3:=coda-slider; 4:flexslider; 4-98 (custom template: display_mode_X.htt); 99:=cheat sheet
 			'start_news_item' => 0,           // start showing news from the Nth news item onwards (default:= 0, min:=-999, max:= 999); Note: -1: last item, -2: 2nd last etc.
 			'max_news_items' => 10,           // maximum number of news shown (default:= 10, min:=1, max:= 999)
@@ -31,6 +34,7 @@ if (! function_exists('getImageNewsItems')) {
 			'not_older_than' => 0,            // 0:=disabled (default), 0-999 (only show news `published_when` date <=x days; 12 hours:=0.5)
 			'lang_id' => 'AUTO',              // language file to load and lang_id used if $lang_filer = true (default:= auto, examples: AUTO, DE, EN)
 			'lang_filter' => false,	          // flag to enable language filter (default:= false, show only news from a news page, which language fits $lang_id)
+            'skip' => null,                   // do not show posts with the given list of tags (default:=none)
 		);
 
 		// merge defaults and options array and remove unsupported keys
@@ -48,14 +52,18 @@ if (! function_exists('getImageNewsItems')) {
 		 * Include required Anynews files and language files
 		 */
 		require_once ('code/nia_functions.php');
-		require_once ('thirdparty/truncate.php');
+
+        if(!function_exists('nia_truncate',false)) {
+		    require_once ('thirdparty/truncate.php');
+        }
+
 		$lang_id = getValidLanguageId($lang_id);
 		loadLanguageFile($lang_id);
 
 		/**
 		 * Sanitize user specified function parameters
 		 */
-		sanitizeUserInputs($group_id, 'i{0;-999;999}');
+		sanitizeUserInputs($group_id, 'i{0;0;999}');
 		sanitizeUserInputs($start_news_item, 'i{0;-999;999}');
 		sanitizeUserInputs($max_news_items, 'i{10;1;999}');
 		sanitizeUserInputs($max_news_length, 'i{-1;0;250}');
@@ -67,6 +75,7 @@ if (! function_exists('getImageNewsItems')) {
 		sanitizeUserInputs($not_older_than, 'd{0;0;999}');
 		sanitizeUserInputs($group_id_type, 'l{group_id;group_id;page_id;section_id;post_id}');
 		sanitizeUserInputs($lang_filter, 'b');
+        sanitizeUserInputs($skip,'s{TRIM|STRIP|ENTITY}');
 
 		/**
 		 * Create Twig template object and configure it
@@ -84,7 +93,7 @@ if (! function_exists('getImageNewsItems')) {
 		 * Adds new Twig filter "strftime" (defined in "code/anynews_functions.php")
 		 * Allows timestamp conversion using given locale (e.g. Freitag, 20 Juni 2013)
 		 * Template usage: {{ timestamp | strftime('%A, %B %Y', ['de_DE','german','deu']) }}
-		 * Help on format strings: http://ch1.php.net/manual/en/function.strftime.php
+		 * Help on format strings: http://ch1.php.net/manual/en/functi.strftime.php
 		 */
 		$twig->addFilter(new Twig_SimpleFilter('strftime', 'strftime_filter'));
 
@@ -103,11 +112,11 @@ if (! function_exists('getImageNewsItems')) {
 		 */
 		// make Anynews language file text available in Twig template via: {{ lang.KEY }}
 		$data = array();
-		$data['WB_URL'] = WB_URL; 
+		$data['WB_URL'] = WB_URL;
 		foreach ($LANG['ANYNEWS'][0] as $key => $value) {
 			$data['lang'][$key] = $value;
 		}
-		
+
 		/**
 		 * Work out SQL query for group_id, limiting news to display depending by defined $news_filter
 		 *  option 1: $group_id:=0 => '1'
@@ -120,17 +129,10 @@ if (! function_exists('getImageNewsItems')) {
 		// check for multiple groups or single group values
 		if (is_array($group_id)) {
 			// SQL query for multiple groups
-			$negate = "";
-			foreach ($group_id as $key => $value){
-				if($value<0) $negate = "NOT";
-				$group_id[$key] = abs($value);
-			}
-			$sql_group_id = "`$group_id_type` $negate IN (" . implode(',', $group_id) . ")";
+			$sql_group_id = "t1.`$group_id_type` IN (" . implode(',', $group_id) . ")";
 		} else {
 			// SQL query for single or empty groups
-			$sql_group_id = '1';
-			if($group_id>0) $sql_group_id = "`$group_id_type` = '$group_id'";
-			if($group_id<0) $sql_group_id = "`$group_id_type` != '".-$group_id."'";
+			$sql_group_id = ($group_id) ? "t1.`$group_id_type` = '$group_id'" : '1';
 		}
 
 		/**
@@ -139,23 +141,23 @@ if (! function_exists('getImageNewsItems')) {
 		 */
 		// work out current server time (also used for published_when and published_until checks)
 		$server_time = time();
-		
+
 		$sql_not_older_than = '1';
 		if ($not_older_than > 0) {
-			$sql_not_older_than = ' (`published_when` >= \'' . ($server_time - ($not_older_than * 24 * 60 * 60)) . '\')';
+			$sql_not_older_than = ' (t1.`published_when` >= \'' . ($server_time - ($not_older_than * 24 * 60 * 60)) . '\')';
 		}
 
 		/**
 		 * Work out SQL query to hide news added via news pages NOT matching $lang_id
-		 * Requires to organize news items via news pages with page language set to $lang_id 
-		 * Returns all news entries if no news page was found matching given $lang_id  
+		 * Requires to organize news items via news pages with page language set to $lang_id
+		 * Returns all news entries if no news page was found matching given $lang_id
 		 **/
 		$sql_lang_filter = '1';
 		if ($lang_filter) {
-			// get all page_ids which page language match defined $lang_id  
+			// get all page_ids which page language match defined $lang_id
 			$page_ids = getPageIdsByLanguage($lang_id);
 			if (count($page_ids) > 0) {
-				$sql_lang_filter = '`page_id` in (' . implode(',', $page_ids) . ')'; 
+				$sql_lang_filter = 't1.`page_id` in (' . implode(',', $page_ids) . ')';
 			}
 		}
 
@@ -163,20 +165,51 @@ if (! function_exists('getImageNewsItems')) {
 		 * Work out SQL sort by and sort order query string
 		 */
 		// creates SQL query for sort by option
-		$order_by_options = array('`position`', '`posted_when`', '`published_when`', 'RAND()');
+		$order_by_options = array('t1.`position`', 't1.`posted_when`', 't1.`published_when`', 'RAND()');
 		$sql_order_by = $order_by_options[$sort_by - 1];
-		
+
 		// creates SQL query for sort order option
 		$sql_sort_order = ($sort_order == 1) ? 'DESC' : 'ASC';
+
+        // filter by tags - requires NWI >= v4.1.0
+        $filter_posts = array();
+        $sql_filter_posts = null;
+        include_once WB_PATH.'/modules/news_img/functions.inc.php';
+        if(function_exists('mod_nwi_get_tags')) {
+            if(!empty($skip)) {
+                $tags = explode(",",$skip);
+                $r = $database->query(
+                    "SELECT `t2`.`post_id` FROM `".TABLE_PREFIX."mod_news_img_tags` as `t1` ".
+                    "JOIN `".TABLE_PREFIX."mod_news_img_tags_posts` AS `t2` ".
+                    "ON `t1`.`tag_id`=`t2`.`tag_id` ".
+                    "WHERE `tag` IN ('".implode("', '", $tags)."') ".
+                    "GROUP BY `t2`.`post_id`"
+                );
+                while(null!==($row=$r->fetchRow())) {
+                    $filter_posts[] = $row['post_id'];
+                }
+                if(count($filter_posts)>0) {
+                    $sql_filter_posts = " AND `t1`.`post_id` NOT IN (".implode(',',array_values($filter_posts)).") ";
+                }
+            }
+        } 
 
 		/**
 		 * Build SQL query for Anynews
 		 */
-		$news_table = TABLE_PREFIX . 'mod_news_img_posts';		
-		$sql = "SELECT * FROM `$news_table` WHERE `active` = '1' AND $sql_group_id	AND $sql_lang_filter AND (`published_when` = '0' or `published_when` <= '$server_time') AND (`published_until` = '0' OR `published_until` >= '$server_time') AND $sql_not_older_than GROUP BY `post_id`	ORDER BY $sql_order_by $sql_sort_order";
-		
-		//echo $sql;
-		//exit;
+		$news_table = TABLE_PREFIX . 'mod_news_img_posts';
+    	$sql = "SELECT t1.*
+			FROM `$news_table` as t1
+			WHERE t1.`active` = '1'
+			AND $sql_group_id
+			AND $sql_lang_filter
+			AND (t1.`published_when` = '0' or t1.`published_when` <= '$server_time')
+			AND (t1.`published_until` = '0' OR t1.`published_until` >= '$server_time')
+			AND $sql_not_older_than
+            $sql_filter_posts
+			GROUP BY t1.`post_id`
+			ORDER BY $sql_order_by $sql_sort_order
+		";
 
 		// start from N-th last news item if $start_news_items is negative
 		if ($start_news_item < 0) {
@@ -223,9 +256,9 @@ if (! function_exists('getImageNewsItems')) {
 				// shorten news text to defined news length (-1 for full text length)
 				if ($max_news_length != -1 && strlen($row['content_short']) > $max_news_length) {
 					// truncate text if user asked for using CakePHP truncate function
-					$row['content_short'] = truncate($row['content_short'], $max_news_length);
+					$row['content_short'] = nia_truncate($row['content_short'], $max_news_length);
 				}
-								
+
 
 				// work out group image if exists
 				$group_id = $row['group_id'];
@@ -233,10 +266,11 @@ if (! function_exists('getImageNewsItems')) {
 				if (file_exists(WB_PATH . MEDIA_DIRECTORY . '/.news_img/image' . $group_id . '.jpg')) {
 					$gimage = '<img src="' . WB_URL . MEDIA_DIRECTORY . '/.news_img/image' . $group_id . '.jpg' . '" alt="" />';
 				}
-				
+
+                // post image
 				$nimage = $row['image'];
-				if ($row['image']!='' && file_exists(WB_PATH . MEDIA_DIRECTORY . '/.news_img/'.$row['post_id'].'/' . $nimage)) {
-					$nimage =  WB_URL . MEDIA_DIRECTORY . '/.news_img/'.$row['post_id'].'/' . $nimage;
+				if (file_exists(WB_PATH . MEDIA_DIRECTORY . '/.news_img/'.$row['post_id'].'/' . $nimage)) {
+					$nimage =  WB_URL . MEDIA_DIRECTORY . '/.news_img/' .$row['post_id'].'/'. $nimage;
 				}
 
 				// make news item data available in Twig template: {{ newsItems.Counter.KEY }}
@@ -251,10 +285,10 @@ if (! function_exists('getImageNewsItems')) {
 					'POSTED_BY'          => (int)$row['posted_by'],
 					'USERNAME'           => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['USERNAME']) : '',
 					'DISPLAY_NAME'       => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['DISPLAY_NAME']) : '',
-					'TITLE'              => ($strip_tags) ? strip_tags($row['title']) : $row['title'],					
+					'TITLE'              => ($strip_tags) ? strip_tags($row['title']) : $row['title'],
 					'LINK'               => WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION,
 					'CONTENT_SHORT'      => $row['content_short'],
-					'CONTENT_LONG'       => $row['content_long'],					
+					'CONTENT_LONG'       => $row['content_long'],
 					'POSTED_WHEN'        => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['posted_when'] + (int) TIMEZONE),
 					'PUBLISHED_WHEN'     => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['published_when'] + (int) TIMEZONE),
 					'PUBLISHED_UNTIL'    => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['published_until'] + (int) TIMEZONE),
@@ -273,13 +307,14 @@ if (! function_exists('getImageNewsItems')) {
 				foreach ($custom_vars as $key => $value) {
 					$data['newsItems'][$news_counter][$key] = $value;
 				}
-				
+
 				$news_counter++;
 			}
 		}
-	
+
 		// return parsed template
 		return $tpl->render($data);
+
 	}
 }
 
@@ -304,7 +339,8 @@ if (! function_exists('displayNewsItems')) {
 		$sort_order = 1,                // 1:=descending (default), 2:=ascending
 		$not_older_than = 0,            // 0:=disabled (default), 0-999 (only show news `published_when` date <=x days; 12 hours:=0.5)
 		$group_id_type = 'group_id',    // type used by group_id to extract news entries (supported: 'group_id', 'page_id', 'section_id', 'post_id')
-		$lang_filter = false            // flag to enable language filter (default:= false, show only news from a news page, which language fits $lang_id)
+		$lang_filter = false,           // flag to enable language filter (default:= false, show only news from a news page, which language fits $lang_id)
+        $skip = null
 	)
 	{
 		// get cwsoft-anynews output for given parameters
@@ -323,6 +359,7 @@ if (! function_exists('displayNewsItems')) {
 				'not_older_than' => $not_older_than,
 				'lang_id' => $lang_id,
 				'lang_filter' => $lang_filter,
+                'skip' => $skip
 			)
 		);
 		echo $output;

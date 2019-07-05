@@ -4,8 +4,8 @@
  * USAGE:
  *   1. create a new droplet "getImageNewsItems" via Admin-Tools --> Droplets
  *   2. enter the following code into the droplet code section:
- *      if (! file_exists(WB_PATH . '/modules/news_img_anywhere/droplet/nia_droplet.php')) return;
- *      include(WB_PATH . '/modules/news_img_anywhere/droplet/nia_droplet.php');
+ *      if (! file_exists(WB_PATH . '/modules/news_img/anwhere/droplet/cwsoft-anynews-droplet.php')) return;
+ *      include(WB_PATH . '/modules/news_img/anwhere/droplet/cwsoft-anynews-droplet.php');
  *      return $output;
  */
 
@@ -22,7 +22,7 @@ if (! function_exists('getImageNewsItems')) return;
 // supported cwsoft-anynews options
 $options = array(
 	'group_id_type' => 'group_id',    // type used by group_id to extract news entries (supported: 'group_id', 'page_id', 'section_id', 'post_id')
-	'group_id' => 0,                  // IDs of news to show, matching defined $group_id_type (default:=0, all news, 0..N, or array(2,4,5,N) to limit news to IDs matching $group_id_type, -1..-N or array(-2,-4,-5,-N) to limit news to IDs NOT matching those $group_id_type values)
+	'group_id' => 0,                  // IDs of news to show, matching defined $group_id_type (default:=0, all news, 0..N, or array(2,4,5,N) to limit news to IDs matching $group_id_type)
 	'display_mode' => 1,              // 1:=details (default); 2:=list; 3:=coda-slider; 4:flexslider; 4-98 (custom template: display_mode_X.htt); 99:=cheat sheet
 	'start_news_item' => 0,           // start showing news from the Nth news item onwards (default:= 0, min:=-999, max:= 999); Note: -1: last item, -2: 2nd last etc.
 	'max_news_items' => 10,           // maximum number of news shown (default:= 10, min:=1, max:= 999)
@@ -35,6 +35,7 @@ $options = array(
 	'not_older_than' => 0,            // 0:=disabled (default), 0-999 (only show news `published_when` date <=x days; 12 hours:=0.5)
 	'lang_id' => 'AUTO',              // language file to load and lang_id used if $lang_filer = true (default:= auto, examples: AUTO, DE, EN)
 	'lang_filter' => false,	          // flag to enable language filter (default:= false, show only news from a news page, which language fits $lang_id)
+    'skip' => null,
 );
 
 // update options with user defined values
