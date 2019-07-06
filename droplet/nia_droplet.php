@@ -1,12 +1,14 @@
 <?php
 /**
- * Droplet: [[getImageNewsItems?group_id=1,2&supported_paramter_in_any_order=VALUE&further_parameter_in_any_order=VALUE]]
- * USAGE:
- *   1. create a new droplet "getImageNewsItems" via Admin-Tools --> Droplets
- *   2. enter the following code into the droplet code section:
- *      if (! file_exists(WB_PATH . '/modules/news_img/anywhere/droplet/cwsoft-anynews-droplet.php')) return;
- *      include(WB_PATH . '/modules/news_img/anywhere/droplet/cwsoft-anynews-droplet.php');
- *      return $output;
+Droplet: [[getImageNewsItems?group_id=1,2&supported_paramter_in_any_order=VALUE&further_parameter_in_any_order=VALUE]]
+USAGE:
+1. create a new droplet "getImageNewsItems" via Admin-Tools --> Droplets
+2. enter the following code into the droplet code section:
+
+if (! file_exists(WB_PATH . '/modules/news_img_anywhere/droplet/nia_droplet.php')) return;
+include(WB_PATH . '/modules/news_img_anywhere/droplet/nia_droplet.php');
+return $output;
+
  */
 
 // prevent this file from being accessed directly
