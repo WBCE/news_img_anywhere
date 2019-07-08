@@ -35,6 +35,7 @@ if (! function_exists('getImageNewsItems'))
 			'lang_id' => 'AUTO',              // language file to load and lang_id used if $lang_filer = true (default:= auto, examples: AUTO, DE, EN)
 			'lang_filter' => false,	          // flag to enable language filter (default:= false, show only news from a news page, which language fits $lang_id)
             'skip' => null,                   // do not show posts with the given list of tags (default:=none)
+            'tags' => null,
 		);
 
 		// merge defaults and options array and remove unsupported keys
@@ -53,7 +54,7 @@ if (! function_exists('getImageNewsItems'))
 		 */
 		require_once ('code/nia_functions.php');
 
-        if(!function_exists('nia_truncate',false)) {
+        if(!function_exists('nia_truncate')) {
 		    require_once ('thirdparty/truncate.php');
         }
 
@@ -76,6 +77,7 @@ if (! function_exists('getImageNewsItems'))
 		sanitizeUserInputs($group_id_type, 'l{group_id;group_id;page_id;section_id;post_id}');
 		sanitizeUserInputs($lang_filter, 'b');
         sanitizeUserInputs($skip,'s{TRIM|STRIP|ENTITY}');
+        sanitizeUserInputs($tags,'s{TRIM|STRIP|ENTITY}');
 
 		/**
 		 * Create Twig template object and configure it
@@ -190,6 +192,22 @@ if (! function_exists('getImageNewsItems'))
                 }
                 if(count($filter_posts)>0) {
                     $sql_filter_posts = " AND `t1`.`post_id` NOT IN (".implode(',',array_values($filter_posts)).") ";
+                }
+            }
+            if(!empty($tags)) {
+                $tags = explode(",",$tags);
+                $r = $database->query(
+                    "SELECT `t2`.`post_id` FROM `".TABLE_PREFIX."mod_news_img_tags` as `t1` ".
+                    "JOIN `".TABLE_PREFIX."mod_news_img_tags_posts` AS `t2` ".
+                    "ON `t1`.`tag_id`=`t2`.`tag_id` ".
+                    "WHERE `tag` IN ('".implode("', '", $tags)."') ".
+                    "GROUP BY `t2`.`post_id`"
+                );
+                while(null!==($row=$r->fetchRow())) {
+                    $filter_posts[] = $row['post_id'];
+                }
+                if(count($filter_posts)>0) {
+                    $sql_filter_posts = " AND `t1`.`post_id` IN (".implode(',',array_values($filter_posts)).") ";
                 }
             }
         } 
@@ -340,7 +358,8 @@ if (! function_exists('displayNewsItems')) {
 		$not_older_than = 0,            // 0:=disabled (default), 0-999 (only show news `published_when` date <=x days; 12 hours:=0.5)
 		$group_id_type = 'group_id',    // type used by group_id to extract news entries (supported: 'group_id', 'page_id', 'section_id', 'post_id')
 		$lang_filter = false,           // flag to enable language filter (default:= false, show only news from a news page, which language fits $lang_id)
-        $skip = null
+        $skip = null,
+        $tags = null
 	)
 	{
 		// get cwsoft-anynews output for given parameters
@@ -359,7 +378,8 @@ if (! function_exists('displayNewsItems')) {
 				'not_older_than' => $not_older_than,
 				'lang_id' => $lang_id,
 				'lang_filter' => $lang_filter,
-                'skip' => $skip
+                'skip' => $skip,
+                'tags' => $tags,
 			)
 		);
 		echo $output;

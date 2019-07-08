@@ -38,6 +38,7 @@ $options = array(
 	'lang_id' => 'AUTO',              // language file to load and lang_id used if $lang_filer = true (default:= auto, examples: AUTO, DE, EN)
 	'lang_filter' => false,	          // flag to enable language filter (default:= false, show only news from a news page, which language fits $lang_id)
     'skip' => null,
+    'tags' => null,
 );
 
 // update options with user defined values
