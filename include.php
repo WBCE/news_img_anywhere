@@ -179,12 +179,12 @@ if (! function_exists('getImageNewsItems'))
         include_once WB_PATH.'/modules/news_img/functions.inc.php';
         if(function_exists('mod_nwi_get_tags')) {
             if(!empty($skip)) {
-                $tags = explode(",",$skip);
+                $skip_tags = explode(",",$skip);
                 $r = $database->query(
                     "SELECT `t2`.`post_id` FROM `".TABLE_PREFIX."mod_news_img_tags` as `t1` ".
                     "JOIN `".TABLE_PREFIX."mod_news_img_tags_posts` AS `t2` ".
                     "ON `t1`.`tag_id`=`t2`.`tag_id` ".
-                    "WHERE `tag` IN ('".implode("', '", $tags)."') ".
+                    "WHERE `tag` IN ('".implode("', '", $skip_tags)."') ".
                     "GROUP BY `t2`.`post_id`"
                 );
                 while(null!==($row=$r->fetchRow())) {
