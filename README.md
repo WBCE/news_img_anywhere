@@ -1,5 +1,5 @@
 # News with Images anywhere: Addon for WBCE CMS
-The code snippet `News with Images anywhere` (NIA) is designed to fetch news entries from the `News with images module´. Invoke NIA where you want the news output to appear in your frontend. Optional configuration parameters, HTML templates, content placeholders and CSS definitions allow you to style the news output the way you want. NIA ships with four templates - including two jQuery sliding effects - ready to use out of the box.
+The code snippet `News with Images anywhere` (NIA) is designed to fetch news entries from the `News with images moduleÂ´. Invoke NIA where you want the news output to appear in your frontend. Optional configuration parameters, HTML templates, content placeholders and CSS definitions allow you to style the news output the way you want. NIA ships with four templates - including two jQuery sliding effects - ready to use out of the box.
 
 ## Download
 Download is available in the [WBCE CMS Add-On Repository](https://addons.wbce.org).
@@ -87,6 +87,8 @@ Calling `getImageNewsItems` without configuration array uses the DEFAULTS below:
 		'not_older_than' => 0,
 		'lang_id' => 'AUTO',
 		'lang_filter' => false,
+		'skip' => null,
+                'tags' => null
 	);
 	
 	// calling getImageNewsItems() without configuration array uses the defaults above
@@ -149,6 +151,12 @@ Calling `getImageNewsItems` without configuration array uses the DEFAULTS below:
 
 - **lang_filter**: flag to enable language filter (requires a language flag in page URL like domain.com/EN/news.php)
 	[default:= false, true:=only show news, which page language match given $lang_id]
+
+- **skip**: skips news items with one of the given keywords; seperate keywords with comma
+        [default:= none]
+	
+- **tags**: the opposite of 'skip', only list news items with one of the given keywords
+        [default:= none]
 	
 ***Tip:*** 
 To output *news title* and all possible NIA *group_type_ids* (post_id, section_id, page_id, group_id), add the following code into a page/section of type code.
