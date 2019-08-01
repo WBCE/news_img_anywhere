@@ -161,7 +161,7 @@ Calling `getImageNewsItems` without configuration array uses the DEFAULTS below:
 ***Tip:*** 
 To output *news title* and all possible NIA *group_type_ids* (post_id, section_id, page_id, group_id), add the following code into a page/section of type code.
 
-	require_once(WB_PATH . '/modules/news_img_anywhere/code/NIA_functions.php');
+	require_once(WB_PATH . '/modules/news_img_anywhere/code/nia_functions.php');
 	getGroupIdTypes($sort_column = "post_id", $sort_order = "ASC", $output = true);
 
 Then visit the created page/section in your frontend and extract the *group_tpye_ids* you want to use in your NIA function call.
