@@ -179,7 +179,10 @@ if (! function_exists('getImageNewsItems'))
         include_once WB_PATH.'/modules/news_img/functions.inc.php';
         if(function_exists('mod_nwi_get_tags')) {
             if(!empty($skip)) {
-                $skip_tags = explode(",",$skip);
+                $skip_tags = explode(",",urldecode($skip));
+                foreach($skip_tags as $i => $t) {
+                    $skip_tags[$i] = $database->escapeString($t);
+                }
                 $r = $database->query(
                     "SELECT `t2`.`post_id` FROM `".TABLE_PREFIX."mod_news_img_tags` as `t1` ".
                     "JOIN `".TABLE_PREFIX."mod_news_img_tags_posts` AS `t2` ".
@@ -195,7 +198,10 @@ if (! function_exists('getImageNewsItems'))
                 }
             }
             if(!empty($tags)) {
-                $tags = explode(",",$tags);
+                $tags = explode(",",urldecode($tags));
+                foreach($tags as $i => $t) {
+                    $tags[$i] = $database->escapeString($t);
+                }
                 $r = $database->query(
                     "SELECT `t2`.`post_id` FROM `".TABLE_PREFIX."mod_news_img_tags` as `t1` ".
                     "JOIN `".TABLE_PREFIX."mod_news_img_tags_posts` AS `t2` ".
@@ -203,11 +209,13 @@ if (! function_exists('getImageNewsItems'))
                     "WHERE `tag` IN ('".implode("', '", $tags)."') ".
                     "GROUP BY `t2`.`post_id`"
                 );
-                while(null!==($row=$r->fetchRow())) {
+                while($row=$r->fetchRow()) {
                     $filter_posts[] = $row['post_id'];
                 }
                 if(count($filter_posts)>0) {
                     $sql_filter_posts = " AND `t1`.`post_id` IN (".implode(',',array_values($filter_posts)).") ";
+                } else { // no posts for any tag
+                    $sql_filter_posts = " AND `t1`.`post_id`='-1'";
                 }
             }
         } 
@@ -286,34 +294,34 @@ if (! function_exists('getImageNewsItems'))
 				}
 
                 // post image
-				$nimage = $row['image'];
-				if (file_exists(WB_PATH . MEDIA_DIRECTORY . '/.news_img/'.$row['post_id'].'/' . $nimage)) {
-					$nimage =  WB_URL . MEDIA_DIRECTORY . '/.news_img/' .$row['post_id'].'/'. $nimage;
+				$nimage = '';
+				if (strlen($row['image'])>0 && file_exists(WB_PATH . MEDIA_DIRECTORY . '/.news_img/'.$row['image'])) {
+					$nimage =  WB_URL . MEDIA_DIRECTORY . '/.news_img/'.$row['image'];
 				}
 
 				// make news item data available in Twig template: {{ newsItems.Counter.KEY }}
 				$data['newsItems'][$news_counter] = array(
-					'GROUP_IMAGE'        => $gimage,
-					'NEWS_ID'            => $news_counter + 1,
-					'POST_ID'            => (int)$row['post_id'],
-					'SECTION_ID'         => (int)$row['section_id'],
-					'PAGE_ID'            => (int)$row['page_id'],
-					'GROUP_ID'           => (int)$row['group_id'],
-					'GROUP_TITLE'        => array_key_exists($row['group_id'], $news_group_titles) ? htmlentities($news_group_titles[$row['group_id']]) : '',
-					'POSTED_BY'          => (int)$row['posted_by'],
-					'USERNAME'           => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['USERNAME']) : '',
-					'DISPLAY_NAME'       => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['DISPLAY_NAME']) : '',
-					'TITLE'              => ($strip_tags) ? strip_tags($row['title']) : $row['title'],
-					'LINK'               => WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION,
-					'CONTENT_SHORT'      => $row['content_short'],
 					'CONTENT_LONG'       => $row['content_long'],
-					'POSTED_WHEN'        => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['posted_when'] + (int) TIMEZONE),
-					'PUBLISHED_WHEN'     => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['published_when'] + (int) TIMEZONE),
-					'PUBLISHED_UNTIL'    => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['published_until'] + (int) TIMEZONE),
-					'TS_POSTED_WHEN'     => $row['posted_when'] + (int) TIMEZONE,
-					'TS_PUBLISHED_WHEN'  => $row['published_when'] + (int) TIMEZONE,
-					'TS_PUBLISHED_UNTIL' => $row['published_until'] + (int) TIMEZONE,
+					'CONTENT_SHORT'      => $row['content_short'],
+					'DISPLAY_NAME'       => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['DISPLAY_NAME']) : '',
+					'GROUP_ID'           => (int)$row['group_id'],
+					'GROUP_IMAGE'        => $gimage,
+					'GROUP_TITLE'        => array_key_exists($row['group_id'], $news_group_titles) ? htmlentities($news_group_titles[$row['group_id']]) : '',
 					'IMAGE'              => $nimage,
+					'LINK'               => WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION,
+					'NEWS_ID'            => $news_counter + 1,
+					'PAGE_ID'            => (int)$row['page_id'],
+					'POST_ID'            => (int)$row['post_id'],
+					'POSTED_BY'          => (int)$row['posted_by'],
+					'POSTED_WHEN'        => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['posted_when'] + (int) TIMEZONE),
+					'PUBLISHED_UNTIL'    => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['published_until'] + (int) TIMEZONE),
+					'PUBLISHED_WHEN'     => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['published_when'] + (int) TIMEZONE),
+					'SECTION_ID'         => (int)$row['section_id'],
+					'TITLE'              => ($strip_tags) ? strip_tags($row['title']) : $row['title'],
+					'TS_POSTED_WHEN'     => $row['posted_when'] + (int) TIMEZONE,
+					'TS_PUBLISHED_UNTIL' => $row['published_until'] + (int) TIMEZONE,
+					'TS_PUBLISHED_WHEN'  => $row['published_when'] + (int) TIMEZONE,
+					'USERNAME'           => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['USERNAME']) : '',
 				);
 
 				// make custom placeholders available in Twig template: {{ newsItems.Counter.SHORT|LONG_REGEX_NAME_ID }}
