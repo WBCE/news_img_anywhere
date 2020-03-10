@@ -26,7 +26,7 @@ if (! function_exists('getImageNewsItems'))
 			'start_news_item' => 0,           // start showing news from the Nth news item onwards (default:= 0, min:=-999, max:= 999); Note: -1: last item, -2: 2nd last etc.
 			'max_news_items' => 10,           // maximum number of news shown (default:= 10, min:=1, max:= 999)
 			'max_news_length' => -1,          // maximum length of the short news text shown (default:=-1 => full news length)
-			'strip_tags' => true,             // true:=remove tags from short and long text (default:=true); false:=don´t strip tags
+			'strip_tags' => true,             // true:=remove tags from short and long text (default:=true); false:=donÂ´t strip tags
 			'allowed_tags' => '<p><a><img>',  // tags not striped off (default:='<p><a><img>')
 			'custom_placeholder' => false,    // false:= none (default), array('MY_VAR_1' => '%TAG%#', ... 'MY_VAR_N' => '#regex_N#' ...)
 			'sort_by' => 1,                   // 1:=position (default), 2:=posted_when, 3:=published_when, 4:=random order
@@ -298,6 +298,11 @@ if (! function_exists('getImageNewsItems'))
 				if (strlen($row['image'])>0 && file_exists(WB_PATH . MEDIA_DIRECTORY . '/.news_img/'.$row['image'])) {
 					$nimage =  WB_URL . MEDIA_DIRECTORY . '/.news_img/'.$row['image'];
 				}
+				
+				$hasgalleryimages = false;
+				$sql_result = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_news_img_img WHERE post_id = ".$row['post_id']);
+                $anz_post_img = $sql_result->numRows();
+				if ($anz_post_img>0) {$hasgalleryimages=true;}
 
 				// make news item data available in Twig template: {{ newsItems.Counter.KEY }}
 				$data['newsItems'][$news_counter] = array(
@@ -322,6 +327,7 @@ if (! function_exists('getImageNewsItems'))
 					'TS_PUBLISHED_UNTIL' => $row['published_until'] + (int) TIMEZONE,
 					'TS_PUBLISHED_WHEN'  => $row['published_when'] + (int) TIMEZONE,
 					'USERNAME'           => array_key_exists($row['posted_by'], $user_list) ? htmlentities($user_list[$row['posted_by']]['USERNAME']) : '',
+					'HASGALLERYIMAGES'	 => $hasgalleryimages
 				);
 
 				// make custom placeholders available in Twig template: {{ newsItems.Counter.SHORT|LONG_REGEX_NAME_ID }}
@@ -358,7 +364,7 @@ if (! function_exists('displayNewsItems')) {
 		$max_news_length = -1,          // maximum length of the short news text shown (default:=-1 => full news length)
 		$display_mode = 1,              // 1:=details (default); 2:=list; 3:=coda-slider; 4:flexslider; 4-98 (custom template: display_mode_X.htt); 99:=cheat sheet
 		$lang_id = 'AUTO',              // language file to load and lang_id used if $lang_filer = true (default:= auto, examples: AUTO, DE, EN)
-		$strip_tags = true,             // true:=remove tags from short and long text (default:=true); false:=don´t strip tags
+		$strip_tags = true,             // true:=remove tags from short and long text (default:=true); false:=donÂ´t strip tags
 		$allowed_tags = '<p><a><img>',  // tags not striped off (default:='<p><a><img>')
 		$custom_placeholder = false,    // false:= none (default), array('MY_VAR_1' => '%TAG%#', ... 'MY_VAR_N' => '#regex_N#' ...)
 		$sort_by = 1,                   // 1:=position (default), 2:=posted_when, 3:=published_when, 4:=random order
