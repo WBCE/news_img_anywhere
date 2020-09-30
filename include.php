@@ -315,7 +315,7 @@ if (! function_exists('getImageNewsItems'))
 					'IMAGE'              => $nimage,
 					'LINK'               => WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION,
 					'NEWS_ID'            => $news_counter + 1,
-					'PAGE_ID'            => (int)$row['page_id'],
+//					'PAGE_ID'            => (int)$row['page_id'],
 					'POST_ID'            => (int)$row['post_id'],
 					'POSTED_BY'          => (int)$row['posted_by'],
 					'POSTED_WHEN'        => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['posted_when'] + (int) TIMEZONE),
