@@ -82,31 +82,44 @@ if (! function_exists('getImageNewsItems'))
 		/**
 		 * Create Twig template object and configure it
 		 */
-		// Twig is part of WBCE since commit 79aa15e
-		$loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/templates');
-		$twig = new Twig_Environment($loader, array(
-			'autoescape'       => false,
-			'cache'            => false,
-			'strict_variables' => false,
-			'debug'            => false,
-		));
+		
 
-		/**
-		 * Adds new Twig filter "strftime" (defined in "code/anynews_functions.php")
-		 * Allows timestamp conversion using given locale (e.g. Freitag, 20 Juni 2013)
-		 * Template usage: {{ timestamp | strftime('%A, %B %Y', ['de_DE','german','deu']) }}
-		 * Help on format strings: http://ch1.php.net/manual/en/functi.strftime.php
-		 */
-		$twig->addFilter(new Twig_SimpleFilter('strftime', 'strftime_filter'));
-
-		/**
-		 * Load Anynews Twig template specified via $display_mode
-		 */
-		if (file_exists(dirname(__FILE__) . '/templates/display_mode_' . $display_mode . '.htt')) {
-			$tpl = $twig->loadTemplate('display_mode_' . $display_mode . '.htt');
-		} else {
-			$tpl = $twig->loadTemplate('display_mode_1.htt');
-		}
+		
+		 if (WBCE_VERSION <= "1.4.5") {
+			 
+			 $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/templates');
+			$twig = new Twig_Environment($loader, array(
+				'autoescape'       => false,
+				'cache'            => false,
+				'strict_variables' => false,
+				'debug'            => false,
+			));
+			 
+	 		$twig->addFilter(new Twig_SimpleFilter('strftime', 'strftime_filter'));
+			/**
+			 * Load Anynews Twig template specified via $display_mode
+			 */
+			if (file_exists(dirname(__FILE__) . '/templates/display_mode_' . $display_mode . '.htt')) {
+				$tpl = $twig->loadTemplate('display_mode_' . $display_mode . '.htt');
+			} else {
+				$tpl = $twig->loadTemplate('display_mode_1.htt');
+			}
+			
+			
+		 } else {
+			 
+			 $twig = getTwig(__DIR__ . '/templates');
+			 
+			$twig->addFilter(new \Twig\TwigFilter('strftime', 'strftime_filter'));
+			/**
+			 * Load Anynews Twig template specified via $display_mode
+			 */
+			if (file_exists(dirname(__FILE__) . '/templates/display_mode_' . $display_mode . '.htt')) {
+				$tpl = $twig->load('display_mode_' . $display_mode . '.htt');
+			} else {
+				$tpl = $twig->load('display_mode_1.htt');
+			}			
+		 }
 
 		/**
 		 * Make WB_URL and Anynews language file available in Twig template
