@@ -1,20 +1,10 @@
-<script type="text/javascript">
-	// check if jQuery is included via template index.php or equivalent method
-	showJqueryStatus("Anynews (jQuery Liquid Slider)");
+<link rel="stylesheet" type="text/css" href="{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/css/liquid-slider.css" />
+<link rel="stylesheet" type="text/css" href="{{ WB_URL }}/modules/news_img_anywhere/css/liquid-slider-custom.css" />
+<script src="{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.easing.min.js"></script>
+<script src="{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.touchSwipe.min.js"></script>
+<script src="{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.liquid-slider.min.js"></script>
+<script src="{{ WB_URL }}/modules/news_img_anywhere/javascript/liquid-slider-config.js"></script>
 
-	// include Liquid Slider plugin files
-	$.insert([
-		// load thirdparty jQuery plugin components of Liquid Slider
-		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/css/liquid-slider.css',
-		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.easing.min.js',
-		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.touchSwipe.min.js',
-		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.liquid-slider.min.js',
-	
-		// include YOUR Liquid Slider configuration and CSS changes (adjust these two files to your needs)
-		'{{ WB_URL }}/modules/news_img_anywhere/css/liquid-slider-custom.css',
-		'{{ WB_URL }}/modules/news_img_anywhere/javascript/liquid-slider-config.js'
-	]); 
-</script>	
 
 <div class="mod_nia">
 	<h2>{{ lang.TXT_HEADER }}</h2>
