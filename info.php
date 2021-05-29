@@ -2,7 +2,7 @@
 $module_directory     = 'news_img_anywhere';
 $module_name          = 'News with Images anywhere';
 $module_function      = 'snippet';
-$module_version       = '0.3.3';
+$module_version       = '0.3.4';
 $module_platform      = 'WBCE';
 $module_author        = 'cwsoft, florian ';
 $module_license       = '<a href="http://www.gnu.org/licenses/gpl.html">GNU General Public Licencse 3.0</a>';

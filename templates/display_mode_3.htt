@@ -3,7 +3,7 @@
 	showJqueryStatus("Anynews (jQuery Liquid Slider)");
 
 	// include Liquid Slider plugin files
-	$.include([
+	$.insert([
 		// load thirdparty jQuery plugin components of Liquid Slider
 		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/css/liquid-slider.css',
 		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/liquidslider/js/jquery.easing.min.js',
@@ -25,6 +25,9 @@
 				{% if news.TS_POSTED_WHEN > 0 %}
 					<div>
 						<h2>{{ news.TITLE }}</h2>
+						{% if news.IMAGE %}
+						<img src="{{ news.IMAGE }}" style="float:right"/>	
+						{% endif %}
 						{{ news.CONTENT_SHORT }}
 						{% if news.CONTENT_LONG %}
 							<a href="{{ news.LINK }}">{{ lang.TXT_READMORE }}</a>

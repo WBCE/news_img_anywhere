@@ -3,7 +3,7 @@
 	showJqueryStatus("Anynews (jQuery Flexslider)");
 
 	// include flexslider files
-	$.include([
+	$.insert([
 		// load thirdparty jQuery plugin components of flexslider
 		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/flexslider/flexslider.css',
 		'{{ WB_URL }}/modules/news_img_anywhere/thirdparty/flexslider/jquery.flexslider-min.js',
