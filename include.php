@@ -316,6 +316,11 @@ if (! function_exists('getImageNewsItems'))
 				$sql_result = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_news_img_img WHERE post_id = ".$row['post_id']);
                 $anz_post_img = $sql_result->numRows();
 				if ($anz_post_img>0) {$hasgalleryimages=true;}
+				$post_href_link = 'href="'.WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION.'"';
+				
+				if ( (strlen($row['content_long']) < 9) && ($anz_post_img < 1)) {					
+					$post_href_link = '';
+				}
 
 				// make news item data available in Twig template: {{ newsItems.Counter.KEY }}
 				$data['newsItems'][$news_counter] = array(
@@ -327,8 +332,8 @@ if (! function_exists('getImageNewsItems'))
 					'GROUP_TITLE'        => array_key_exists($row['group_id'], $news_group_titles) ? htmlentities($news_group_titles[$row['group_id']]) : '',
 					'IMAGE'              => $nimage,
 					'LINK'               => WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION,
+					'HREF'				 => $post_href_link,
 					'NEWS_ID'            => $news_counter + 1,
-//					'PAGE_ID'            => (int)$row['page_id'],
 					'POST_ID'            => (int)$row['post_id'],
 					'POSTED_BY'          => (int)$row['posted_by'],
 					'POSTED_WHEN'        => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['posted_when'] + (int) TIMEZONE),
