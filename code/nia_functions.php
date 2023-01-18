@@ -114,8 +114,8 @@ function sanitizeUserInputs(&$input, $filter)
 			// loop over input values
 			foreach($temp as $key => $value) {
 				// check if value is in list (return default value if not in list)
-				if (strpos($filter_options, 'STRIP') !== false) $temp[$key] = strip_tags($temp[$key]);
-				if (strpos($filter_options, 'TRIM') !== false) $temp[$key] = trim($temp[$key]);
+				if (strpos($filter_options, 'STRIP') !== false && $temp[$key] != null) $temp[$key] = strip_tags($temp[$key]);
+				if (strpos($filter_options, 'TRIM') !== false  && $temp[$key] != null) $temp[$key] = trim($temp[$key]);
 				if (strpos($filter_options, 'ENTITIES') !== false) $temp[$key] = htmlentities($temp[$key]);
 			}
 			break;			

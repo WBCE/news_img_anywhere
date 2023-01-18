@@ -131,6 +131,21 @@ if (! function_exists('getImageNewsItems'))
 		foreach ($LANG['ANYNEWS'][0] as $key => $value) {
 			$data['lang'][$key] = $value;
 		}
+		
+		/**
+		/* Fallback for old calls with page_id. Since some time ago NWI items do not have a field page_id any more.
+		/* added by florian, 2023/01/18
+		*/
+		
+		if ($group_id_type == 'page_id') {
+			$pid = $database->query('SELECT `section_id` FROM `{TP}sections` WHERE `page_id`='.$group_id.' AND `module`="news_img"');
+			
+			while(null!==($row=$pid->fetchRow())) {
+                    $group_id = $row['section_id'];
+                }
+			$group_id_type = 'section_id';	
+		}
+		
 
 		/**
 		 * Work out SQL query for group_id, limiting news to display depending by defined $news_filter
@@ -316,6 +331,7 @@ if (! function_exists('getImageNewsItems'))
 				$sql_result = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_news_img_img WHERE post_id = ".$row['post_id']);
                 $anz_post_img = $sql_result->numRows();
 				if ($anz_post_img>0) {$hasgalleryimages=true;}
+				
 				$post_href_link = 'href="'.WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION.'"';
 				
 				if ( (strlen($row['content_long']) < 9) && ($anz_post_img < 1)) {					
@@ -334,6 +350,7 @@ if (! function_exists('getImageNewsItems'))
 					'LINK'               => WB_URL . PAGES_DIRECTORY . $row['link'] . PAGE_EXTENSION,
 					'HREF'				 => $post_href_link,
 					'NEWS_ID'            => $news_counter + 1,
+//					'PAGE_ID'            => (int)$row['page_id'],
 					'POST_ID'            => (int)$row['post_id'],
 					'POSTED_BY'          => (int)$row['posted_by'],
 					'POSTED_WHEN'        => date($LANG['ANYNEWS'][0]['DATE_FORMAT'], $row['posted_when'] + (int) TIMEZONE),
