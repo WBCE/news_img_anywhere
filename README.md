@@ -88,7 +88,7 @@ Calling `getImageNewsItems` without configuration array uses the DEFAULTS below:
 		'lang_id' => 'AUTO',
 		'lang_filter' => false,
 		'skip' => null,
-                'tags' => null
+        'tags' => null
 	);
 	
 	// calling getImageNewsItems() without configuration array uses the defaults above
@@ -147,16 +147,16 @@ Calling `getImageNewsItems` without configuration array uses the DEFAULTS below:
 	[0:don't skip news items, 0...999: skip news items older than x days (hint: 0.5 --> 12 hours)]
 
 - **lang_id**: defines NIA language file to be used
-	[allowed: 'AUTO', or a valid WB language file flag: 'DE', 'EN', ...]
+	[allowed: 'AUTO', or a valid language file flag: 'DE', 'EN', ...]
 
 - **lang_filter**: flag to enable language filter (requires a language flag in page URL like domain.com/EN/news.php)
 	[default:= false, true:=only show news, which page language match given $lang_id]
 
 - **skip**: skips news items with one of the given keywords; seperate keywords with comma
-        [default:= none]
+    [default:= none, syntax: 'tag1,tag2,tag3']
 	
 - **tags**: the opposite of 'skip', only list news items with one of the given keywords
-        [default:= none]
+    [default:= none, syntax: 'tag1,tag2,tag3']
 	
 ***Tip:*** 
 To output *news title* and all possible NIA *group_type_ids* (post_id, section_id, page_id, group_id), add the following code into a page/section of type code.
